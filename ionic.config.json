@@ -1,0 +1,7 @@
+{
+  "name": "notion-wallet",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
