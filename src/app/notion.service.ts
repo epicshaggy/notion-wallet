@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { catchError, map } from 'rxjs/operators';
 import { Expense } from './models/expense.model';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class NotionService {
         catchError((error) => {
           console.log(error);
 
-          return null;
+          return of([]);
         }),
         map((res: any) => {
           return res?.pages?.map((page) => {
