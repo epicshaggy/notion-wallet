@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   apiToken: '',
-  apiUrl: 'http://localhost:3000',
+  apiUrl: 'https://notion-wallet-api.herokuapp.com',
 };
