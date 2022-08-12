@@ -1,12 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Expense } from '../models/expense.model';
+import { NotionService } from '../notion.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  isLoading = true;
+  expenses: Expense[] = [];
+  constructor(private notionService: NotionService) {}
 
-  constructor() {}
-
+  ngOnInit(): void {
+    this.notionService.getExpenses().subscribe((expenses: Expense[]) => {
+      this.expenses = expenses;
+      this.isLoading = false;
+    });
+  }
 }
