@@ -13,10 +13,13 @@ export class NotionService {
   constructor(private httpClient: HttpClient) {}
 
   getExpenses() {
+    const token = localStorage.getItem('token');
+
     const params = {
-      token: environment.apiToken,
+      token,
     };
     return this.httpClient
+
       .get(`${environment.apiUrl}/expenses`, { params })
       .pipe(
         catchError((error) => {
