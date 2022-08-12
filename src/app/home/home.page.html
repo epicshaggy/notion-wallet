@@ -19,7 +19,7 @@
   <ion-list *ngIf="!isLoading && !!expenses?.length">
     <ion-item *ngFor="let expense of expenses">
       <ion-label>
-        <h2>{{ expense.description }}</h2>
+        <h2 class="bold-text">{{ expense.description }}</h2>
         <p>{{ expense.date | date }}</p>
       </ion-label>
       <ion-note slot="end">
@@ -32,3 +32,17 @@
     <ion-spinner></ion-spinner>
   </div>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-item class="transparent-background" lines="none">
+      <ion-label>
+        <h2>Expected Balance:</h2>
+      </ion-label>
+
+      <ion-label slot="end">
+        <h1 class="bold-text">{{ expectedBalance | currency }}</h1>
+      </ion-label>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>

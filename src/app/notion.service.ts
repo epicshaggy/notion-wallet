@@ -23,8 +23,6 @@ export class NotionService {
       .get(`${environment.apiUrl}/expenses`, { params })
       .pipe(
         catchError((error) => {
-          console.log(error);
-
           return of([]);
         }),
         map((res: any) => {
@@ -39,5 +37,19 @@ export class NotionService {
           });
         })
       );
+  }
+
+  getExpectedBalance() {
+    const token = localStorage.getItem('token');
+
+    const params = {
+      token,
+    };
+
+    return this.httpClient
+      .get(`${environment.apiUrl}/expected-balance`, {
+        params,
+      })
+      .pipe(catchError(() => of(0)));
   }
 }

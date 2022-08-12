@@ -11,6 +11,7 @@ import { NotionService } from '../notion.service';
 export class HomePage implements OnInit {
   isLoading = true;
   expenses: Expense[] = [];
+  expectedBalance: number;
 
   constructor(
     private notionService: NotionService,
@@ -20,13 +21,23 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log(await this.promptFortoken());
-      return;
+      if (!(await this.promptFortoken())) {
+        this.isLoading = false;
+        return;
+      }
     }
 
+    this.getData();
+  }
+
+  getData() {
     this.notionService.getExpenses().subscribe((expenses: Expense[]) => {
       this.expenses = expenses;
       this.isLoading = false;
+    });
+
+    this.notionService.getExpectedBalance().subscribe((balance: any) => {
+      this.expectedBalance = balance.value;
     });
   }
 
@@ -68,7 +79,9 @@ export class HomePage implements OnInit {
     return false;
   }
 
-  changeToken() {
-    this.promptFortoken();
+  async changeToken() {
+    if (this.promptFortoken()) {
+      this.getData();
+    }
   }
 }
