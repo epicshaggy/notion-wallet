@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable arrow-body-style */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -51,5 +52,52 @@ export class NotionService {
         params,
       })
       .pipe(catchError(() => of(0)));
+  }
+
+  deleteExpense(id: string) {
+    const token = localStorage.getItem('token');
+
+    const params = {
+      token,
+      page_id: id,
+    };
+
+    this.httpClient
+      .get(`${environment.apiUrl}/expense`, {
+        params,
+      })
+      .subscribe();
+  }
+
+  completeExpense(id: string) {
+    const token = localStorage.getItem('token');
+
+    const params = {
+      token,
+      page_id: id,
+    };
+
+    this.httpClient
+      .get(`${environment.apiUrl}/complete-expense`, {
+        params,
+      })
+      .subscribe();
+  }
+  createExpense(expense: Expense) {
+    const token = localStorage.getItem('token');
+
+    const params = {
+      token,
+    };
+
+    return this.httpClient
+      .post(`${environment.apiUrl}/expense`, expense, { params })
+      .pipe(
+        catchError((err) => {
+          console.log(err);
+
+          return of(null);
+        })
+      );
   }
 }

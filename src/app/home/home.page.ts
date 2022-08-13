@@ -1,7 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AlertController,
+  IonRefresher,
+  IonRouterOutlet,
+  ModalController,
+  PopoverController,
+} from '@ionic/angular';
+import { InfoComponent } from '../info/info.component';
 import { Expense } from '../models/expense.model';
 import { NotionService } from '../notion.service';
+import { NewExpenseComponent } from '../pages/home/new-expense/new-expense.component';
 
 @Component({
   selector: 'app-home',
@@ -9,13 +17,19 @@ import { NotionService } from '../notion.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
+  @ViewChild('refresher') refreshser: IonRefresher;
   isLoading = true;
   expenses: Expense[] = [];
   expectedBalance: number;
+  isRefreshingExpenses = false;
+  isRefreshingExpectedBalance = false;
 
   constructor(
     private notionService: NotionService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController,
+    private ionRouterOutlet: IonRouterOutlet,
+    private popoverController: PopoverController
   ) {}
 
   async ngOnInit() {
@@ -34,10 +48,22 @@ export class HomePage implements OnInit {
     this.notionService.getExpenses().subscribe((expenses: Expense[]) => {
       this.expenses = expenses;
       this.isLoading = false;
+
+      this.isRefreshingExpenses = false;
+
+      if (!this.isRefreshingExpectedBalance) {
+        this.refreshser?.complete();
+      }
     });
 
     this.notionService.getExpectedBalance().subscribe((balance: any) => {
       this.expectedBalance = balance.value;
+
+      this.isRefreshingExpectedBalance = false;
+
+      if (!this.isRefreshingExpenses) {
+        this.refreshser?.complete();
+      }
     });
   }
 
@@ -83,5 +109,51 @@ export class HomePage implements OnInit {
     if (this.promptFortoken()) {
       this.getData();
     }
+  }
+
+  deleteExpense(expense: Expense) {
+    this.notionService.deleteExpense(expense.id);
+    this.expectedBalance += expense.amount;
+    this.expenses = this.expenses.filter((e) => e.id !== expense.id);
+  }
+
+  completeExpense(id: string) {
+    this.notionService.completeExpense(id);
+    this.expenses = this.expenses.filter((e) => e.id !== id);
+  }
+
+  doRefresh() {
+    this.isRefreshingExpenses = true;
+    this.isRefreshingExpectedBalance = true;
+    this.getData();
+  }
+
+  async showNewExpense() {
+    const m = await this.modalController.create({
+      component: NewExpenseComponent,
+      presentingElement: this.ionRouterOutlet.nativeEl,
+      canDismiss: true,
+    });
+
+    m.present();
+
+    const { role, data } = await m.onDidDismiss();
+
+    if (role !== 'created') {
+      return;
+    }
+
+    this.expectedBalance -= data.amount;
+
+    this.expenses.push(data);
+  }
+
+  async showInfo(e) {
+    const p = await this.popoverController.create({
+      component: InfoComponent,
+      event: e,
+    });
+
+    p.present();
   }
 }

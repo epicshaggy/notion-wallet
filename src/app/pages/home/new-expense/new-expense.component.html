@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="onCancel()"> Cancel </ion-button>
+    </ion-buttons>
+    <ion-title>New Expense</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #form="ngForm">
+    <ion-item>
+      <ion-label position="floating">Description</ion-label>
+      <ion-input type="text" name="description" ngModel required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Amount</ion-label>
+      <ion-input type="number" name="amount" ngModel required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Date</ion-label>
+      <ion-input
+        placeholder=""
+        type="date"
+        name="date"
+        ngModel
+        required
+      ></ion-input>
+    </ion-item>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button [disabled]="form.form.invalid" (click)="onSave()" expand="block"
+      >Save</ion-button
+    >
+  </ion-toolbar>
+</ion-footer>
